@@ -11,7 +11,7 @@ This guide is intended to give a clear understanding of the deployment and neces
 
 We will also be looking at a typical DevOps CI/CD pipeline that is implemented for an application lifecycle and the stages involved.
 
-P.s Do checkout the final Bonus section also for getting a different perspective of a 2 tiered Kubernetes application architecture on AWS.
+P.s Do checkout the final Bonus section to get a tweak of a 2 tiered Kubernetes application architecture on AWS.
 
 ## Contents ##
 
