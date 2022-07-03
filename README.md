@@ -96,9 +96,10 @@ The ingress gateway pods have all the necessary routing configurations. Any appl
 4. Now we need to create the instance target groups that will be having the 3 Ingress nodes as backends to be served by the Application load balancer we create next.
 5. Create an internet facing Application (HTTP/HTTPS) load balancer. Its configuration must be to listen on ports 80 (for HTTP) and the backend would be the instance target group we created in the previous step.
 6. Now that the infra layer and instances are all set up, we should log into the bastion host, and start off with the installation. In this case, we assume that the upstream Kubernetes deployment is used, however for production, we should make use of vendor supported offerings like RedHat OpenShift, Mirantis Kubernetes Engine, VMware Tanzu, Rancher Labs etc so that we can reach out for any support and expertise needed in case of outage. We can also leverage the managed Kubernetes service of AWS known as EKS. This takes away the burden of managing the Kubernetes cluster and we are only responsible for deploying and managing our application workloads.
-7. You can now put the monitoring tools in place. For example Grafana is a great tool for gathering the relevant metrics for a kubernetes cluster. 
+7. You can now put the monitoring tools in place. For example **Grafana** is a great tool for gathering the relevant metrics for a kubernetes cluster. 
 8. Once the Kubernetes cluster is deployed, the application can deployed into the Kubernetes cluster. For testing purposes, try to manually deploy the application and perform curl tests to see if responses are received. Once testing is successful, deployment can be automated as part of pipelines.
 9. Once you are satisfied with the results, we can go ahead with creating an Amazon RDS instance with an engine of our choice e.g MySQL.
+
 
 ## DevOps CI/CD Pipeline ##
 
@@ -116,6 +117,21 @@ The above image is just one of many examples of a CI/CD pipeline. It is importan
 
 Again, the above is not a strict procedure, but just a basic demonstration of a typical CI/CD pipeline. Companies can have their custom pipelines to  meet their needs.
 
+## Criteria check: ##
+
+Below are some criterias this exercise aims to fulfill. Most organizations aim to implement these in their production clusters hosted on the cloud.
+
+| Criteria | Criteria met? | 
+|----------|-|
+| Cluster in a private isolated network | Yes |
+| Web Application accessible over internet | Yes |
+| Database tier having restricted access only from the web tier | Yes |
+| Managed database and highly available | Yes |
+
+When it comes to managing applications in a production environment, organizations have to be prepared for scalability. There can be 2 solutions for this. One would be to leverage the auto-scaling functionality of AWS . This will help spin up multiple identical EC2 instances on demand whenever required to handle the necessary traffic.
+
+The second (and preferred) way would be to leverage pod deployment scaling functionality. This means that the deployment replicas can be scaled up through the Kubernetes API. This is a much reliable, easier, and cost-effective way of meeting high traffic demands.
+
 
 ## Bonus ##
 
@@ -130,6 +146,11 @@ Since this cluster spans over 3 availability zones, we need one public subnet in
 The application traffic flow takes a similar route to the one described earlier for the single availability zone cluster. From User client > Internet Gateway > Application Load Balancer > Ingress nodes > Worker nodes > Amazon RDS instance.
 
 P.s This architecture does not show the pods just because the diagram would get too complex.
+
+## Helpful links:
+
+1. Detailed guide for [RedHat OpenShift 4.10 installation on GCP using UPI (User Provisioned Infrastructure method)](https://github.com/Hamza-Mandviwala/OCP4.10.3-install-GCP-UPI)
+2. Deploying a [simple nginxdemo app on minikube](https://github.com/Hamza-Mandviwala/simple-nginx-demo-app-minikube)
 
 
 
