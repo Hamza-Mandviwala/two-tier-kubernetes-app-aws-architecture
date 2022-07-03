@@ -27,11 +27,11 @@ We will also be looking at a typical DevOps CI/CD pipeline that is implemented f
 
 ## Architecture Diagram ##
 
-<img width="1535" alt="Screenshot 2022-07-03 at 10 59 41 AM" src="https://user-images.githubusercontent.com/53118271/177026314-b016cbce-5a21-4c0b-a045-977d117366fd.png">
+<img width="1570" alt="Screenshot 2022-07-03 at 3 53 35 PM" src="https://user-images.githubusercontent.com/53118271/177035452-42eef311-4187-49fa-a29a-8a5a42dcff5d.png">
 
 Above is an architecture for a two-tiered k8s application hosted on a production 9 node Kubernetes cluster running on AWS. Tier 1 will be the actual application code that is packaged and running as kubernetes pods on the worker nodes, and Tier 2 would be the database layer i.e Amazon RDS running MySQL in this example.
 
-The red dotted line arrows indicate the flow of application traffic into the cluster, to the application pods and into the database. The blue dotted line arrows indicate users reaching out to Amazon Route53 for address resolution.
+The red dotted line arrows indicate the flow of application traffic into the cluster, to the application pods and into the database. The blue dotted line arrows indicate users reaching out to Amazon Route53 for address resolution. The solid black line arrows indicate the flow of control in the Kubernetes cluster i.e the master nodes controlling the worker nodes. All Kubernetes administrative traffic happens through this.
 
 When a user out on the internet, tries to access the application e.g by accessing the application url address on their browser, the request is sent to AWS Route53. Here the IP address of the Application load balancer pointing to the cluster is fetched. The user request is then routed over the internet to the application loadbalancer’s IP address via the Internet gateway that is connected to its VPC. The application load balancer load balances the traffic in a round-robin manner to the ‘ingress’ nodes. The ingress nodes basically host the ingress gateway pods that act like a gateway into the Kubernetes cluster for any application data traffic.
 
