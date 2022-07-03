@@ -1,7 +1,5 @@
 # Two tier K8s application architecture on AWS ##
 
-## Overview ##
-
 This GitHub Project gives an analysis and architectural view of a 2 Tier Application hosted on AWS.
 
 There are 2 architectural diagrams shared in this guide. The first one gives a multi availability zone layout of an AWS cluster hosting the 2 Tier application, and another is a single availability zone layout of an AWS cluster hosting the 2 Tier application.
@@ -11,7 +9,6 @@ This is just a guide and has not been deployed due to limited resources at my en
 
 ## Contents ##
 
-* [Overview](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#overview)
 * [Architecture Diagram](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#architecture-diagram)
 * [Architecture Components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#architecture-components)
   * [AWS Infra components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#aws-infra-components)
