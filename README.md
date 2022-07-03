@@ -13,7 +13,15 @@ This is just a guide and has not been deployed due to limited resources at my en
 
 ## Architecture Diagram
 
-<img width="1792" alt="Screenshot 2022-07-01 at 8 09 13 PM" src="https://user-images.githubusercontent.com/53118271/176916374-e3115427-9e6c-4ea5-a8a5-443d49897955.png">
+<img width="1535" alt="Screenshot 2022-07-03 at 10 59 41 AM" src="https://user-images.githubusercontent.com/53118271/177026314-b016cbce-5a21-4c0b-a045-977d117366fd.png">
+
+Above is an architecture for a two-tiered k8s application hosted on a production 9 node Kubernetes cluster running on AWS. Tier 1 will be the actual application code that is packaged and running as kubernetes pods on the worker nodes, and Tier 2 would be the database layer i.e Amazon RDS running MySQL in this example.
+
+The red dotted line arrows indicate the flow of application traffic into the cluster, to the application pods and into the database. The blue dotted line arrows indicate users reaching out to Amazon Route53 for address resolution.
+
+When a user out on the internet, tries to access the application e.g by accessing the application url address on their browser, the request is sent to AWS Route53. Here the IP address of the Application load balancer pointing to the cluster is fetched. The user request is then routed over the internet to the application loadbalancer’s IP address via the Internet gateway that is connected to its VPC. The application load balancer load balances the traffic in a round-robin manner to the ‘ingress’ nodes. The ingress nodes basically host the ingress gateway pods that act like a gateway into the Kubernetes cluster for any application data traffic.
+
+The ingress gateway pods have all the necessary routing configurations. Any application traffic hitting these ingress-gateway pods, is then routed to the destination application pods via the help of Kubernetes service that is tied to the application pods. The pods then process the information and store it into the Amazon RDS instances.
 
 ## Architecture Components:
 
@@ -32,7 +40,7 @@ This is just a guide and has not been deployed due to limited resources at my en
 
 ### EC2 Instance cluster components:
 | Instance Name | Instance Type | vCPU | Memory/GB | OS | Purpose |
-|-|-|-|-|-|-|
+|---------------|---------------|------|-----------|----|---------|
 | Master 1 | t3.xlarge | 4 | 16 |   | To host the Kubernetes control plane components. |
 | Master 2 | t3.xlarge | 4 | 16 |   | To host the Kubernetes control plane components. This is a replica for high availability. |
 | Master 3 | t3.xlarge | 4 | 16 |   | To host the Kubernetes control plane components. This is a replica for high availability. |
@@ -45,7 +53,7 @@ This is just a guide and has not been deployed due to limited resources at my en
 
 ### Kubernetes Cluster components:
 | Resource Name | Resource Type | Replicas | Purpose |
-|-|-|-|-|
+|---------------|---------------|----------|---------|
 | Application-deployment e.g *symbiosis-surveyapp* | Deployment | 6 | Actual application code (tier 1) running as pods. |
 | Ingress-gateway-deployment | Deployment | 3 | Ingress gateway pods that simulate a gateway for external traffic into the Kubernetes cluster for accessing application pods. |
 | symbiosis-surveyapp-service | Cluster IP Service | N/A | Allows name resolution for the application pods, and technically a single static name/IP to which other pods or services can connect to when needed to access the application pods. This service acts like a virtual IP for the application deployment pods. |
@@ -73,8 +81,8 @@ This is just a guide and has not been deployed due to limited resources at my en
    4. 1 Bastion/jump host – can be assigned an open security group. This instance will be logged into by the user to perform installation and administration of the Kubernetes cluster. Also, we should be assigning an elastic IP to this instance so that we can ssh into it. ***Kindly note that the architecture diagrams do not contain this bastion/jump host.***
 4. Now we need to create the instance target groups that will be having the 3 Ingress nodes as backends to be served by the Application load balancer we create next.
 5. Create an internet facing Application (HTTP/HTTPS) load balancer. Its configuration must be to listen on ports 80 (for HTTP) and the backend would be the instance target group we created in the previous step.
-6. Now that the infra layer and instances are all set up, we should log into the bastion host, and start off with the installation. In this case, we assume that the upstream Kubernetes deployment is used, however for production, we should make use of vendor supported offerings like RedHat OpenShift, Mirantis Kubernetes Engine, VMware Tanzu, Rancher Labs etc so that we can reach out for any support and expertise needed in case of outage.
-7. Once the Kubernetes cluster is deployed, the application can deployed into the Kubernetes cluster. For testing purposes, try to manually deploy a the application and perform curl tests to see if responses are received. Once testing is successful, deployment can be automated as part of pipelines.
+6. Now that the infra layer and instances are all set up, we should log into the bastion host, and start off with the installation. In this case, we assume that the upstream Kubernetes deployment is used, however for production, we should make use of vendor supported offerings like RedHat OpenShift, Mirantis Kubernetes Engine, VMware Tanzu, Rancher Labs etc so that we can reach out for any support and expertise needed in case of outage. We can also leverage the managed Kubernetes service of AWS known as EKS. This takes away the burden of managing the Kubernetes cluster and we are only responsible for deploying and managing our application workloads.
+7. Once the Kubernetes cluster is deployed, the application can deployed into the Kubernetes cluster. For testing purposes, try to manually deploy the application and perform curl tests to see if responses are received. Once testing is successful, deployment can be automated as part of pipelines.
 
 ## DevOps CI/CD Pipeline
 
@@ -83,5 +91,25 @@ In modern production environments, there is a concept of DevOps CI/CD pipelines.
 <img width="1708" alt="Screenshot 2022-07-01 at 8 10 02 PM" src="https://user-images.githubusercontent.com/53118271/176916207-de5cd53a-0da1-4503-b203-3047a49eeba4.png">
 
 It is important to note the different environments present i.e DEV, UAT, PROD . This a very common practice for an application lifecycle. As it goes through the different stages, applications are pushed to different environments. These environments are identical to each other and only differ in scale.
+
+The above image is just one of many example of a CI/CD pipeline. It is important to note that every organization has their own policies, and can come up with their own pipeline that involves different additional stages as well. They can also have additional environments in fact.
+1. Initially, a developer would write their code, and push it to a source code repository e.g GitHub, GitLab.
+2. For build & packaging, developers/other stake holder would pull the code from the source code repository and build/package them. Typically, this means packaging it into OCI based images, so that it can be run using container runtimes like Docker, Cri-o etc and distributed/deployed using orchestration tools like Kubernetes/Swarm. For this organizations opt for vendor solutions like RedHat OpenShift, Mirantis Kubernetes Engine, VMware Tanzu, Rancher Labs, Amazon EKS, Azure AKS, Google’s GKE etc.
+3. Testing is done on the deployed containers/pods at a DEV stage, if it fails, then the code is sent for debugging, and the procedure repeats. If the testing succeeds, it is then pushed to a different environment e.g UAT env for user acceptance testing. The testing can involve multiple different tests depending on the nature of the application e.g UI/UX testing, pen testing, security testing, load testing, acceptance testing, smoke testing etc.
+4. Finally, once all tests have passed, and the builds are approved for production, they are put into staging and released for use in the PROD env. This involves deploying the build into production environments that are to host production grade applications. Also, post deployment activities like managing, scaling, troubleshooting, maintaining clusters all come into the Continuous Delivery phase.
+Again, the above is not a strict procedure, but just a basic demonstration of a typical CI/CD pipeline. Companies can have their custom pipelines to  meet their needs.
+
+## Bonus
+
+<img width="1482" alt="Screenshot 2022-07-03 at 11 15 09 AM" src="https://user-images.githubusercontent.com/53118271/177026673-345098fb-dc84-44a5-a59f-33fbadc99cce.png">
+
+Above is another architecture diagram of a similar 2-tiered application architecture spanning across 3 different availability zones in the same region. 
+
+The red dotted line arrows indicate the flow of application traffic into the cluster, to the application pods and into the database. The blue dotted line arrows indicate users reaching out to Amazon Route53 for address resolution. The solid black line arrows indicate the flow of control in the Kubernetes cluster i.e the master nodes controlling the worker nodes. All Kubernetes administrative traffic happens through this.
+
+Since this cluster spans over 3 availability zones, we need one public subnet in each zone. We also need 2 private subnets (1 to host the worker/ingress nodes, and 1 to host master nodes) in each zone. For the NAT gateways, it is optional to put 1 in each zone, however in this architecture we have shown 1 NAT gateway in each zone to ensure complete failsafe architecture. Important to note that at least 1 NAT gateway is necessary for the traffic to be routed outside the cluster.
+
+The application traffic flow takes a similar route to the one described earlier for the single availability zone cluster. From User client > Internet Gateway > Application Load Balancer > Ingress nodes > Worker nodes > Amazon RDS instance.
+
 
 
