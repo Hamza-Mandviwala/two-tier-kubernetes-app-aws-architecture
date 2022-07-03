@@ -102,18 +102,20 @@ The ingress gateway pods have all the necessary routing configurations. Any appl
 
 ## DevOps CI/CD Pipeline ##
 
-In modern production environments, there is a concept of DevOps CI/CD pipelines. These basically help create an integrate a pipeline (process) for application delivery through various stages like source code repo hosting, code build, packaging (into images), testing, deployment to production. Below is a very basic Pipeline approach that can be implemented through integration with tools like Jenkins/Gitlab:
+In modern production environments, there is a concept of DevOps CI/CD pipelines. These basically help create and integrate a pipeline (process) for application delivery through various stages like source code repo hosting, code build, packaging (into images), testing, deployment to production. Below is a very basic Pipeline approach that can be implemented through integration with tools like Jenkins/Gitlab:
 
 <img width="1708" alt="Screenshot 2022-07-01 at 8 10 02 PM" src="https://user-images.githubusercontent.com/53118271/176916207-de5cd53a-0da1-4503-b203-3047a49eeba4.png">
 
-It is important to note the different environments present i.e DEV, UAT, PROD . This a very common practice for an application lifecycle. As it goes through the different stages, applications are pushed to different environments. These environments are identical to each other and only differ in scale.
+It is important to note the different environments present i.e DEV, UAT, PROD . This a very common practice for an application lifecycle. As it goes through the different stages, applications are pushed through different environments. These environments are usually identical to each other and only differ in scale.
 
-The above image is just one of many example of a CI/CD pipeline. It is important to note that every organization has their own policies, and can come up with their own pipeline that involves different additional stages as well. They can also have additional environments in fact.
+The above image is just one of many examples of a CI/CD pipeline. It is important to note that every organization has their own policies, and can come up with their own pipeline that involves different additional stages as well. They can also have additional environments in fact.
 1. Initially, a developer would write their code, and push it to a source code repository e.g GitHub, GitLab.
 2. For build & packaging, developers/other stake holder would pull the code from the source code repository and build/package them. Typically, this means packaging it into OCI based images, so that it can be run using container runtimes like Docker, Cri-o etc and distributed/deployed using orchestration tools like Kubernetes/Swarm. For this organizations opt for vendor solutions like RedHat OpenShift, Mirantis Kubernetes Engine, VMware Tanzu, Rancher Labs, Amazon EKS, Azure AKS, Google’s GKE etc.
-3. Testing is done on the deployed containers/pods at a DEV stage, if it fails, then the code is sent for debugging, and the procedure repeats. If the testing succeeds, it is then pushed to a different environment e.g UAT env for user acceptance testing. The testing can involve multiple different tests depending on the nature of the application e.g UI/UX testing, pen testing, security testing, load testing, acceptance testing, smoke testing etc.
+3. Testing is done on the deployed containers/pods at a DEV stage, if it fails, then the code is sent for debugging, and the procedure repeats. If the testing succeeds, it is then pushed to a different environment (*Jenkins can be of help here*) e.g UAT env for user acceptance testing. The testing can involve multiple different tests depending on the nature of the application e.g UI/UX testing, pen testing, security testing, load testing, acceptance testing, smoke testing etc.
 4. Finally, once all tests have passed, and the builds are approved for production, they are put into staging and released for use in the PROD env. This involves deploying the build into production environments that are to host production grade applications. Also, post deployment activities like managing, scaling, troubleshooting, maintaining clusters all come into the Continuous Delivery phase.
+
 Again, the above is not a strict procedure, but just a basic demonstration of a typical CI/CD pipeline. Companies can have their custom pipelines to  meet their needs.
+
 
 ## Bonus ##
 
@@ -126,6 +128,8 @@ The red dotted line arrows indicate the flow of application traffic into the clu
 Since this cluster spans over 3 availability zones, we need one public subnet in each zone. We also need 2 private subnets (1 to host the worker/ingress nodes, and 1 to host master nodes) in each zone. For the NAT gateways, it is optional to put 1 in each zone, however in this architecture we have shown 1 NAT gateway in each zone to ensure complete failsafe architecture. Important to note that at least 1 NAT gateway is necessary for the traffic to be routed outside the cluster.
 
 The application traffic flow takes a similar route to the one described earlier for the single availability zone cluster. From User client > Internet Gateway > Application Load Balancer > Ingress nodes > Worker nodes > Amazon RDS instance.
+
+P.s This architecture does not show the pods just because the diagram would get too complex.
 
 
 
