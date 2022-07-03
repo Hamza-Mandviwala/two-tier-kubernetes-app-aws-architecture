@@ -1,21 +1,26 @@
-# Two tier K8s application architecture on AWS ##
+# Two-tier Kubernetes application architecture on AWS ##
 
 This GitHub Project gives an analysis and architectural view of a 2 Tier Application hosted on AWS.
 
 There are 2 architectural diagrams shared in this guide. The first and main one that we focus on gives a single availability zone layout of an AWS cluster hosting the 2 Tier application, and another is a multi - availability zone layout of an AWS cluster hosting the 2 Tier application.
 The architecture has been planned keeping production use case in mind. 
 
+There are 3 tables in this project that give a quick idea of the entire architectural components involved. We can look at it in 3 layers : AWS Infra layer components, EC2 Instance cluster layer components & Kubernetes Cluster layer components
 It does not involve any additional third party security tools as part of it. Mainly involves using of the appropriate security groups.
 
 This is just a guide and has not been deployed due to limited resources at my end. It should, however, give a clear understanding of the deployment and necessary actions to be taken. It does not contain the detailed step by step procedure to deploy a two tiered application.
+
+We will also be looking at a typical DevOps CI/CD pipeline that is implemented for an application lifecycle and the stages involved.
+
+
 
 ## Contents ##
 
 * [Architecture Diagram](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#architecture-diagram)
 * [Architecture Components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#architecture-components)
-  * [AWS Infra components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#aws-infra-components)
-  * [EC2 Instance cluster components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#ec2-instance-cluster-components)
-  * [Kubernetes Cluster components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#kubernetes-cluster-components)
+  * [AWS Infra layer components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#aws-infra-components)
+  * [EC2 Instance Cluster layer components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#ec2-instance-cluster-components)
+  * [Kubernetes Cluster layer components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#kubernetes-cluster-components)
 * [Deployment Summary](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#deployment-summary)
 * [DevOps CI/CD Pipeline](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#devops-cicd-pipeline)
 * [Bonus](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#bonus)
@@ -34,7 +39,7 @@ The ingress gateway pods have all the necessary routing configurations. Any appl
 
 ## Architecture Components: ##
 
-### AWS Infra components: ###
+### AWS Infra layer components: ###
 | AWS Component | Count | Purpose |
 |---------------|-------|---------|
 | VPC           |   1   | To host entire cluster architecture |
@@ -43,24 +48,24 @@ The ingress gateway pods have all the necessary routing configurations. Any appl
 | Internet Gateway | 1 | To be attached to the VPC to allow traffic communication between the internet and the instances. |
 | NAT Gateway | 1 | To allow instances in the private subnets to reach out to the internet via the public subnet and download any packages. |
 | Amazon RDS | 3 | To make use of the managed database service of AWS. We should make use of the MySQL engine. To ensure high availability, we can create 2 additional read replicas. |
-| Route53 | N/A |   |
-| Cloudwatch Metrics | N/A | Tool for monitoring logs, metrics data for audit purposes |
-| Cloudformation | N/A |.  |
+| Route53 | N/A | To allow public name resolution of the application you wish to deploy. In private clusters where application is only accessed internally, Route53 is not required |
+| Cloudwatch Metrics | N/A | An AWS Tool for monitoring logs, metrics data for audit purposes |
+| Cloudformation templates | N/A |  An AWS tool used for Infrastructure as Code . Allows easy management and deploying of AWS components. |
 
-### EC2 Instance cluster components: ###
+### EC2 Instance Cluster layer components: ###
 | Instance Name | Instance Type | vCPU | Memory/GB | OS | Purpose |
 |---------------|---------------|------|-----------|----|---------|
-| Master 1 | t3.xlarge | 4 | 16 |   | To host the Kubernetes control plane components. |
-| Master 2 | t3.xlarge | 4 | 16 |   | To host the Kubernetes control plane components. This is a replica for high availability. |
-| Master 3 | t3.xlarge | 4 | 16 |   | To host the Kubernetes control plane components. This is a replica for high availability. |
-| Worker 1 | t3.xlarge | 4 | 16 |   | To host worker plane components and the actual application pod deployments. |
-| Worker 2 | t3.xlarge | 4 | 16 |   | To host worker plane components and the actual application pod deployments. |
-| Worker 3 | t3.xlarge | 4 | 16 |   | To host worker plane components and the actual application pod deployments. |
-| Ingress-node1 | t3.xlarge | 4 | 16 |   | To host the Kubernetes worker plane components and mainly the ingress gateway pod deployments. |
-| Ingress-node2 | t3.xlarge | 4 | 16 |   | To host the Kubernetes worker plane components and mainly the ingress gateway pod deployments. |
-| Ingress-node3 | t3.xlarge | 4 | 16 |   | To host the Kubernetes worker plane components and mainly the ingress gateway pod deployments. |
+| Master 1 | t3.xlarge | 4 | 16 | Ubuntu/RHEL | To host the Kubernetes control plane components. |
+| Master 2 | t3.xlarge | 4 | 16 | Ubuntu/RHEL | To host the Kubernetes control plane components. This is a replica for high availability. |
+| Master 3 | t3.xlarge | 4 | 16 | Ubuntu/RHEL | To host the Kubernetes control plane components. This is a replica for high availability. |
+| Worker 1 | t3.xlarge | 4 | 16 | Ubuntu/RHEL | To host worker plane components and the actual application pod deployments. |
+| Worker 2 | t3.xlarge | 4 | 16 | Ubuntu/RHEL | To host worker plane components and the actual application pod deployments. |
+| Worker 3 | t3.xlarge | 4 | 16 | Ubuntu/RHEL | To host worker plane components and the actual application pod deployments. |
+| Ingress-node1 | t3.xlarge | 4 | 16 | Ubuntu/RHEL | To host the Kubernetes worker plane components and mainly the ingress gateway pod deployments. |
+| Ingress-node2 | t3.xlarge | 4 | 16 | Ubuntu/RHEL | To host the Kubernetes worker plane components and mainly the ingress gateway pod deployments. |
+| Ingress-node3 | t3.xlarge | 4 | 16 | Ubuntu/RHEL | To host the Kubernetes worker plane components and mainly the ingress gateway pod deployments. |
 
-### Kubernetes Cluster components: ###
+### Kubernetes Cluster layer components: ###
 | Resource Name | Resource Type | Replicas | Purpose |
 |---------------|---------------|----------|---------|
 | Application-deployment e.g *symbiosis-surveyapp* | Deployment | 6 | Actual application code (tier 1) running as pods. |
@@ -73,25 +78,27 @@ The ingress gateway pods have all the necessary routing configurations. Any appl
 
 1. We first begin with creating the AWS VPC. In this process, we can select 
    1. The VPC cidr network range (e.g 10.0.0.0/16)
-   2. Number of availability zones. 3 in our case.
-   3. Number of private subnets. 3 in our case. You can configure the subnet ranges of your preference e.g 10.0.1.0/24, 10.0.2.0/24, 10.0.3.0/24
-   4. Number of public subnets. 3 in our case. (Note: we can opt for 1 public subnet, put a single NAT Gateway in this single public subnet, and that can work as well. However it will not be a reliable failover mechanism)
-   5. Number of NAT Gateways. 3 in our case i.e 1 per availability zone.
-   6. Route table object would be automatically populated. This will include public as well as private route tables. These are important to ensure connectivity between subnets in the same availability zone as well as across 3 different availability zones.
+   2. Number of availability zones. 1 in our case.
+   3. Number of private subnets. 2 in our case. You can configure the subnet ranges of your preference e.g 10.0.1.0/24, 10.0.2.0/24
+   4. Number of public subnets. 1 in our case.
+   5. Number of NAT Gateways. 1 in our case.
+   6. Route table object would be automatically populated. This will include public as well as private route tables. These are important to ensure connectivity between subnets.
    7. An internet gateway also will be created in this process and attached to the VPC.
 2. We should create the necessary security groups for communication between the instances and also the Amazon RDS instance we create later.
    1. A security group for all Kubernetes related ports – This should allow connection between the instances only. External traffic should be restricted from accessing Kubernetes ports. Source can be set to the subnet range of the instances.
    2. A security group for allowing Ports 80/443 to Ingress nodes from the source of 0.0.0.0/0.
    3. A security group to allow the Worker nodes to communicate with the MySQL RDS instances on port 3306 (default port for MySQL). Source can be set to the actual IP addresses of the worker nodes.
-3. Now that the basic infra components are created, we can go ahead with the creation the EC2 instances that will be running a Kubernetes cluster to host the application. Ensure the above created security groups are added to the appropriate instances
-   1. 3 Master nodes – to be put into different availability zones.
-   2. 3 worker nodes – to be put into different availability zones.
-   3. 3 ingress nodes – to be put into different availability zones.
+3. Now that the basic infra components are created, we can go ahead with the creation of the EC2 instances that will be running a Kubernetes cluster to host the application. Ensure the above created security groups are added to the appropriate instances.
+   1. 3 Master nodes – to be put into the master private subnet.
+   2. 3 worker nodes – to be put into worker plane private subnet.
+   3. 3 ingress nodes – to be put into worker plane private subnet.
    4. 1 Bastion/jump host – can be assigned an open security group. This instance will be logged into by the user to perform installation and administration of the Kubernetes cluster. Also, we should be assigning an elastic IP to this instance so that we can ssh into it. ***Kindly note that the architecture diagrams do not contain this bastion/jump host.***
 4. Now we need to create the instance target groups that will be having the 3 Ingress nodes as backends to be served by the Application load balancer we create next.
 5. Create an internet facing Application (HTTP/HTTPS) load balancer. Its configuration must be to listen on ports 80 (for HTTP) and the backend would be the instance target group we created in the previous step.
 6. Now that the infra layer and instances are all set up, we should log into the bastion host, and start off with the installation. In this case, we assume that the upstream Kubernetes deployment is used, however for production, we should make use of vendor supported offerings like RedHat OpenShift, Mirantis Kubernetes Engine, VMware Tanzu, Rancher Labs etc so that we can reach out for any support and expertise needed in case of outage. We can also leverage the managed Kubernetes service of AWS known as EKS. This takes away the burden of managing the Kubernetes cluster and we are only responsible for deploying and managing our application workloads.
-7. Once the Kubernetes cluster is deployed, the application can deployed into the Kubernetes cluster. For testing purposes, try to manually deploy the application and perform curl tests to see if responses are received. Once testing is successful, deployment can be automated as part of pipelines.
+7. You can now put the monitoring tools in place. For example Grafana is a great tool for gathering the relevant metrics for a kubernetes cluster. 
+8. Once the Kubernetes cluster is deployed, the application can deployed into the Kubernetes cluster. For testing purposes, try to manually deploy the application and perform curl tests to see if responses are received. Once testing is successful, deployment can be automated as part of pipelines.
+9. Once you are satisfied with the results, we can go ahead with creating an Amazon RDS instance with an engine of our choice e.g MySQL.
 
 ## DevOps CI/CD Pipeline ##
 
