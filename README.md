@@ -1,6 +1,6 @@
-# Two tier K8s application architecture on AWS
+# Two tier K8s application architecture on AWS ##
 
-## Overview
+## Overview ##
 
 This guide gives an analysis and architectural view of a 2 Tier Application hosted on AWS.
 
@@ -9,9 +9,19 @@ The architecture has been planned keeping production use case in mind. However, 
 
 This is just a guide and has not been deployed due to limited resources at my end. It should, however, give a clear understanding of the deployment and necessary actions to be taken. It does not contain the detailed step by step procedure to deploy a two tiered application.
 
-## Contents
+## Contents ##
 
-## Architecture Diagram
+* Overview
+* Architecture Diagram
+* Architecture Components
+  * AWS Infra components
+  * EC2 Instance cluster components
+  * Kubernetes Cluster components
+* Deployment Summary
+* DevOps CI/CD Pipeline
+* Bonus
+
+## Architecture Diagram ##
 
 <img width="1535" alt="Screenshot 2022-07-03 at 10 59 41 AM" src="https://user-images.githubusercontent.com/53118271/177026314-b016cbce-5a21-4c0b-a045-977d117366fd.png">
 
@@ -23,9 +33,9 @@ When a user out on the internet, tries to access the application e.g by accessin
 
 The ingress gateway pods have all the necessary routing configurations. Any application traffic hitting these ingress-gateway pods, is then routed to the destination application pods via the help of Kubernetes service that is tied to the application pods. The pods then process the information and store it into the Amazon RDS instances.
 
-## Architecture Components:
+## Architecture Components: ##
 
-### AWS Infra components:
+### AWS Infra components: ###
 | AWS Component | Count | Purpose |
 |---------------|-------|---------|
 | VPC           |   1   | To host entire cluster architecture |
@@ -38,7 +48,7 @@ The ingress gateway pods have all the necessary routing configurations. Any appl
 | Cloudwatch Metrics | N/A | Tool for monitoring logs, metrics data for audit purposes |
 | Cloudformation | N/A |.  |
 
-### EC2 Instance cluster components:
+### EC2 Instance cluster components: ###
 | Instance Name | Instance Type | vCPU | Memory/GB | OS | Purpose |
 |---------------|---------------|------|-----------|----|---------|
 | Master 1 | t3.xlarge | 4 | 16 |   | To host the Kubernetes control plane components. |
@@ -51,7 +61,7 @@ The ingress gateway pods have all the necessary routing configurations. Any appl
 | Ingress-node2 | t3.xlarge | 4 | 16 |   | To host the Kubernetes worker plane components and mainly the ingress gateway pod deployments. |
 | Ingress-node3 | t3.xlarge | 4 | 16 |   | To host the Kubernetes worker plane components and mainly the ingress gateway pod deployments. |
 
-### Kubernetes Cluster components:
+### Kubernetes Cluster components: ###
 | Resource Name | Resource Type | Replicas | Purpose |
 |---------------|---------------|----------|---------|
 | Application-deployment e.g *symbiosis-surveyapp* | Deployment | 6 | Actual application code (tier 1) running as pods. |
@@ -60,7 +70,7 @@ The ingress gateway pods have all the necessary routing configurations. Any appl
 | ingress-gateway-deployment-service | NodePort/LoadBalancer Service | N/A | Allows name resolution for the ingress-gateway pods, and technically a single static name/IP to which other pods or services can connect to when needed to access the ingress-gateway pods. This service acts like a virtual IP for the ingress-gateway pods. |
 | Grafana Dashboard | Daemonset | 1 pod per node | For monitoring purposes. This tool helps collect a variety of metrics for Kubernetes clusters. |
 
-## Deployment Summary
+## Deployment Summary ##
 
 1. We first begin with creating the AWS VPC. In this process, we can select 
    1. The VPC cidr network range (e.g 10.0.0.0/16)
@@ -84,7 +94,7 @@ The ingress gateway pods have all the necessary routing configurations. Any appl
 6. Now that the infra layer and instances are all set up, we should log into the bastion host, and start off with the installation. In this case, we assume that the upstream Kubernetes deployment is used, however for production, we should make use of vendor supported offerings like RedHat OpenShift, Mirantis Kubernetes Engine, VMware Tanzu, Rancher Labs etc so that we can reach out for any support and expertise needed in case of outage. We can also leverage the managed Kubernetes service of AWS known as EKS. This takes away the burden of managing the Kubernetes cluster and we are only responsible for deploying and managing our application workloads.
 7. Once the Kubernetes cluster is deployed, the application can deployed into the Kubernetes cluster. For testing purposes, try to manually deploy the application and perform curl tests to see if responses are received. Once testing is successful, deployment can be automated as part of pipelines.
 
-## DevOps CI/CD Pipeline
+## DevOps CI/CD Pipeline ##
 
 In modern production environments, there is a concept of DevOps CI/CD pipelines. These basically help create an integrate a pipeline (process) for application delivery through various stages like source code repo hosting, code build, packaging (into images), testing, deployment to production. Below is a very basic Pipeline approach that can be implemented through integration with tools like Jenkins/Gitlab:
 
@@ -99,7 +109,7 @@ The above image is just one of many example of a CI/CD pipeline. It is important
 4. Finally, once all tests have passed, and the builds are approved for production, they are put into staging and released for use in the PROD env. This involves deploying the build into production environments that are to host production grade applications. Also, post deployment activities like managing, scaling, troubleshooting, maintaining clusters all come into the Continuous Delivery phase.
 Again, the above is not a strict procedure, but just a basic demonstration of a typical CI/CD pipeline. Companies can have their custom pipelines to  meet their needs.
 
-## Bonus
+## Bonus ##
 
 <img width="1482" alt="Screenshot 2022-07-03 at 11 15 09 AM" src="https://user-images.githubusercontent.com/53118271/177026673-345098fb-dc84-44a5-a59f-33fbadc99cce.png">
 
