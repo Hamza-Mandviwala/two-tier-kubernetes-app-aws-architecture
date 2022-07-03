@@ -31,7 +31,7 @@ The red dotted line arrows indicate the flow of application traffic into the clu
 
 When a user out on the internet, tries to access the application e.g by accessing the application url address on their browser, the request is sent to AWS Route53. Here the IP address of the Application load balancer pointing to the cluster is fetched. The user request is then routed over the internet to the application loadbalancer’s IP address via the Internet gateway that is connected to its VPC. The application load balancer load balances the traffic in a round-robin manner to the ‘ingress’ nodes. The ingress nodes basically host the ingress gateway pods that act like a gateway into the Kubernetes cluster for any application data traffic.
 
-The ingress gateway pods have all the necessary routing configurations. Any application traffic hitting these ingress-gateway pods, is then routed to the destination application pods via the help of Kubernetes service that is tied to the application pods. The pods then process the information and store it into the Amazon RDS instances.
+The ingress gateway pods have all the necessary routing configurations. Any application traffic hitting these ingress-gateway pods, is then routed to the destination application pods on the respective worker nodes via the help of Kubernetes service that is tied to the application pods. The pods then process the information and store it into the Amazon RDS instances.
 
 ## Architecture Components: ##
 
