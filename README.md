@@ -11,15 +11,15 @@ This is just a guide and has not been deployed due to limited resources at my en
 
 ## Contents ##
 
-* Overview
-* Architecture Diagram
-* Architecture Components
-  * AWS Infra components
-  * EC2 Instance cluster components
-  * Kubernetes Cluster components
-* Deployment Summary
-* DevOps CI/CD Pipeline
-* Bonus
+* [Overview](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#overview)
+* [Architecture Diagram](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#architecture-diagram)
+* [Architecture Components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#architecture-components)
+  * [AWS Infra components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#aws-infra-components)
+  * [EC2 Instance cluster components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#ec2-instance-cluster-components)
+  * [Kubernetes Cluster components](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#kubernetes-cluster-components)
+* [Deployment Summary](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#deployment-summary)
+* [DevOps CI/CD Pipeline](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#devops-cicd-pipeline)
+* [Bonus](https://github.com/Hamza-Mandviwala/two-tier-k8sapplication-aws-architecture/blob/main/README.md#bonus)
 
 ## Architecture Diagram ##
 
