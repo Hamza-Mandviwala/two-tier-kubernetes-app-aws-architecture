@@ -2,7 +2,7 @@
 
 ## Overview ##
 
-This guide gives an analysis and architectural view of a 2 Tier Application hosted on AWS.
+This GitHub Project gives an analysis and architectural view of a 2 Tier Application hosted on AWS.
 
 There are 2 architectural diagrams shared in this guide. The first one gives a multi availability zone layout of an AWS cluster hosting the 2 Tier application, and another is a single availability zone layout of an AWS cluster hosting the 2 Tier application.
 The architecture has been planned keeping production use case in mind. However, it does not involve any additional third party security tools as part of it.
